@@ -3,6 +3,7 @@ package com.binaracademy.binarfud.handler;
 import com.binaracademy.binarfud.dto.response.base.ErrorDTO;
 import com.binaracademy.binarfud.dto.response.base.APIResponse;
 import com.binaracademy.binarfud.dto.response.base.ApiErrorResponse;
+import com.binaracademy.binarfud.exception.AccessDeniedException;
 import com.binaracademy.binarfud.exception.DataConflictException;
 import com.binaracademy.binarfud.exception.ServiceBusinessException;
 import com.binaracademy.binarfud.exception.DataNotFoundException;
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler({ServiceBusinessException.class})
+    @ExceptionHandler(ServiceBusinessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public APIResponse handleServiceException(ServiceBusinessException exception) {
         return new APIResponse(
@@ -52,6 +53,15 @@ public class GlobalExceptionHandler {
     public APIResponse handledDataNotFoundException(DataNotFoundException exception) {
         return new APIResponse(
                 HttpStatus.NOT_FOUND,
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public APIResponse handledDataNotFoundException(AccessDeniedException exception) {
+        return new APIResponse(
+                HttpStatus.FORBIDDEN,
                 exception.getMessage()
         );
     }

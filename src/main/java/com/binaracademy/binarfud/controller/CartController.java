@@ -16,19 +16,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/v1/carts", produces = "application/json")
+@RequestMapping(value = "/v1/cart", produces = "application/json")
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
 
-    @PostMapping
+    @PostMapping("/")
     @Schema(name = "CreateCartRequest", description = "Create cart request body")
     @Operation(summary = "Endpoint to handle create new cart")
-    public ResponseEntity<APIResultResponse<CartResponse>> createNewUser(@RequestBody @Valid CreateCartRequest createCartRequest) {
-        CartResponse cartResponse = cartService.addNewCart(createCartRequest);
+    public ResponseEntity<APIResultResponse<CartResponse>> addToCart(@RequestBody @Valid CreateCartRequest request) {
+        CartResponse cartResponse = cartService.addNewCart(request);
         APIResultResponse<CartResponse> responseDTO =  new APIResultResponse<>(
                 HttpStatus.CREATED,
-                "Merchant successfully created",
+                "Product successfully added to cart",
                 cartResponse
         );
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class MerchantController {
     private MerchantService merchantService;
 
-    @PutMapping("/status/")
+    @PutMapping("/status")
     @Schema(name = "UpdateStatusMerchantRequest", description = "Update status merchant request body")
     @Operation(summary = "Endpoint to handle update merchant status")
     public ResponseEntity<APIResponse> updateStatusMerchant(@RequestBody @Valid UpdateStatusMerchantRequest request){

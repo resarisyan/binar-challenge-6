@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthenticationService {
-    RegisterCustomerResponse registerCustomer(RegisterCustomerRequest userRequest);
-    RegisterMerchantResponse registerMerchant(RegisterMerchantRequest userRequest);
+    RegisterCustomerResponse registerCustomer(RegisterCustomerRequest request);
+    RegisterMerchantResponse registerMerchant(RegisterMerchantRequest request);
 
     LoginResponse login(LoginRequest request);
     RefreshTokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response);

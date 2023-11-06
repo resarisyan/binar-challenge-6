@@ -38,10 +38,10 @@ public class User implements UserDetails {
     private EnumRole role;
 
     @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
+    private transient List<Token> tokens;
 
     @OneToOne(mappedBy = "user")
-    private Merchant merchant;
+    private transient Merchant merchant;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

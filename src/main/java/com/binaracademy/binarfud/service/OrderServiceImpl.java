@@ -9,7 +9,6 @@ import com.binaracademy.binarfud.exception.ServiceBusinessException;
 import com.binaracademy.binarfud.repository.CartRepository;
 import com.binaracademy.binarfud.repository.OrderDetailRepository;
 import com.binaracademy.binarfud.repository.OrderRepository;
-import com.binaracademy.binarfud.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,8 +23,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final UserRepository userRepository;
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
     @Override
     public OrderResponse makeOrder(OrderRequest request) {
@@ -33,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
             User user = jwtService.getUser();
             List<Cart> carts = cartRepository.findByUser(user);
             if (carts.isEmpty()) {
-                throw new ServiceBusinessException("Cart is empty");
+                throw new DataNotFoundException("Cart is empty");
             }
             Order order = Order.builder()
                     .user(user)

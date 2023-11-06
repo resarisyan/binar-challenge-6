@@ -27,9 +27,9 @@ public class ProductController {
     @PostMapping("/")
     @Schema(name = "CreateProductRequest", description = "Create product request body")
     @Operation(summary = "Endpoint to handle create new product")
-    public ResponseEntity<APIResultResponse<ProductResponse>> createNewProduct(@RequestBody @Valid CreateProductRequest createProductRequest) {
-        log.info("Create new product request: {}", createProductRequest);
-        ProductResponse productResponse = productService.addNewProduct(createProductRequest);
+    public ResponseEntity<APIResultResponse<ProductResponse>> createNewProduct(@RequestBody @Valid CreateProductRequest request) {
+        log.info("Create new product request: {}", request);
+        ProductResponse productResponse = productService.addNewProduct(request);
         APIResultResponse<ProductResponse> responseDTO =  new APIResultResponse<>(
                 HttpStatus.CREATED,
                 "Product successfully created",
@@ -41,8 +41,8 @@ public class ProductController {
     @PutMapping("/{productName}")
     @Schema(name = "UpdateProductRequest", description = "Update product request body")
     @Operation(summary = "Endpoint to handle update product")
-    public ResponseEntity<APIResponse> updateProduct(@PathVariable String productName, @RequestBody @Valid UpdateProductReqeust updateProductReqeust) {
-        productService.updateProduct(productName, updateProductReqeust);
+    public ResponseEntity<APIResponse> updateProduct(@PathVariable String productName, @RequestBody @Valid UpdateProductReqeust request) {
+        productService.updateProduct(productName, request);
         APIResponse responseDTO =  new APIResponse(
                 HttpStatus.OK,
                 "Product successfully updated"

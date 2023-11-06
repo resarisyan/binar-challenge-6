@@ -1,6 +1,7 @@
 package com.binaracademy.binarfud.validation;
 
 
+import com.binaracademy.binarfud.exception.ServiceBusinessException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class FieldExistenceValidator implements ConstraintValidator<FieldExisten
             return shouldExist ? count > 0 : count == 0;
         } catch (Exception e) {
             log.error("Failed to check field exists");
-            throw new RuntimeException("Failed to check field exists");
+            throw new ServiceBusinessException("Failed to check field exists");
         }
     }
 }

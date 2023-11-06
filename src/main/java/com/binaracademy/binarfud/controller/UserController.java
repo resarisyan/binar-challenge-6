@@ -1,9 +1,9 @@
 package com.binaracademy.binarfud.controller;
 
 import com.binaracademy.binarfud.dto.request.UpdateUserRequest;
+import com.binaracademy.binarfud.dto.response.UserResponse;
 import com.binaracademy.binarfud.dto.response.base.APIResponse;
 import com.binaracademy.binarfud.dto.response.base.APIResultResponse;
-import com.binaracademy.binarfud.dto.response.RegisterCustomerResponse;
 import com.binaracademy.binarfud.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,9 +22,9 @@ public class UserController {
     @PutMapping("/")
     @Schema(name = "UpdateUserRequest", description = "Update user request body")
     @Operation(summary = "Endpoint to handle update user")
-    public ResponseEntity<APIResultResponse<RegisterCustomerResponse>> updateUser(@RequestBody @Valid UpdateUserRequest request){
+    public ResponseEntity<APIResultResponse<UserResponse>> updateUser(@RequestBody @Valid UpdateUserRequest request){
         userService.updateUser(request);
-        APIResultResponse<RegisterCustomerResponse> responseDTO = new APIResultResponse<>(
+        APIResultResponse<UserResponse> responseDTO = new APIResultResponse<>(
                 HttpStatus.OK,
                 "User successfully updated"
         );

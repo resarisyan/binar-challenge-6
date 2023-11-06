@@ -8,7 +8,7 @@ import com.binaracademy.binarfud.dto.response.ProductResponse;
 import com.binaracademy.binarfud.entity.Merchant;
 import com.binaracademy.binarfud.entity.Product;
 import com.binaracademy.binarfud.entity.User;
-import com.binaracademy.binarfud.exception.DataConflictException;
+import com.binaracademy.binarfud.exception.AccessDeniedException;
 import com.binaracademy.binarfud.exception.DataNotFoundException;
 import com.binaracademy.binarfud.exception.ServiceBusinessException;
 import com.binaracademy.binarfud.repository.MerchantRepository;
@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -31,9 +30,9 @@ public class ProductServiceImpl implements ProductService{
     private final JwtService jwtService;
     private static final String PRODUCT_NOT_FOUND = "Product not found";
     private static final String MERCHANT_NOT_FOUND = "Merchant not found";
-    private static final String ACCESS_DENIED = "You are not allowed to update this product";
+    private static final String ACCESS_DENIED = "You are not allowed to access this product";
     @Override
-    public ProductResponse addNewProduct(CreateProductRequest productRequest) {
+    public ProductResponse addNewProduct(CreateProductRequest request) {
         ProductResponse productResponse;
         try{
             log.info("Adding new product");
@@ -41,9 +40,9 @@ public class ProductServiceImpl implements ProductService{
             Merchant merchant = merchantRepository.findFirstByMerchantName(user.getMerchant().getMerchantName())
                     .orElseThrow(() -> new DataNotFoundException(MERCHANT_NOT_FOUND));
             Product product = Product.builder()
-                    .productName(productRequest.getProductName())
+                    .productName(request.getProductName())
                     .merchant(merchant)
-                    .price(productRequest.getPrice())
+                    .price(request.getPrice())
                     .build();
             productRepository.save(product);
             productResponse = ProductResponse.builder()
@@ -64,20 +63,20 @@ public class ProductServiceImpl implements ProductService{
         return productResponse;
     }
     @Override
-    public void updateProduct(String productName, UpdateProductReqeust updateProductReqeust) {
+    public void updateProduct(String productName, UpdateProductReqeust request) {
         try {
             log.info("Updating product");
             User user = jwtService.getUser();
-            Product existingProduct = productRepository.findByProductName(productName).orElseThrow(() -> new DataConflictException(PRODUCT_NOT_FOUND));
+            Product existingProduct = productRepository.findByProductName(productName).orElseThrow(() -> new DataNotFoundException(PRODUCT_NOT_FOUND));
             if (!existingProduct.getMerchant().getMerchantName().equals(user.getMerchant().getMerchantName())) {
                 throw new AccessDeniedException(ACCESS_DENIED);
             }
 
-            existingProduct.setProductName(updateProductReqeust.getProductName());
-            existingProduct.setPrice(updateProductReqeust.getPrice());
+            existingProduct.setProductName(request.getProductName());
+            existingProduct.setPrice(request.getPrice());
             productRepository.save(existingProduct);
             log.info("Product {} successfully updated", existingProduct.getProductName());
-        } catch (DataNotFoundException e) {
+        } catch (AccessDeniedException | DataNotFoundException e) {
             throw e;
         } catch (Exception e) {
             log.error("Failed to update product");
@@ -89,13 +88,13 @@ public class ProductServiceImpl implements ProductService{
         try {
             log.info("Deleting product");
             User user = jwtService.getUser();
-            Product existingProduct = productRepository.findByProductName(productName).orElseThrow(() -> new DataConflictException(PRODUCT_NOT_FOUND));
+            Product existingProduct = productRepository.findByProductName(productName).orElseThrow(() -> new DataNotFoundException(PRODUCT_NOT_FOUND));
             if (!existingProduct.getMerchant().getMerchantName().equals(user.getMerchant().getMerchantName())) {
                 throw new AccessDeniedException(ACCESS_DENIED);
             }
             productRepository.delete(existingProduct);
             log.info("Product {} successfully deleted", existingProduct.getProductName());
-        } catch (DataNotFoundException e) {
+        } catch (AccessDeniedException | DataNotFoundException e) {
             throw e;
         } catch (Exception e) {
             log.error("Failed to delete product");
@@ -106,11 +105,7 @@ public class ProductServiceImpl implements ProductService{
     public ProductResponse getProductDetail(String productName) {
         try {
             log.info("Getting product detail");
-            User user = jwtService.getUser();
-            Product product = productRepository.findByProductName(productName).orElseThrow(() -> new DataConflictException(PRODUCT_NOT_FOUND));
-            if (!product.getMerchant().getMerchantName().equals(user.getMerchant().getMerchantName())) {
-                throw new AccessDeniedException(ACCESS_DENIED);
-            }
+            Product product = productRepository.findByProductName(productName).orElseThrow(() -> new DataNotFoundException(PRODUCT_NOT_FOUND));
             return ProductResponse.builder()
                     .productName(product.getProductName())
                     .merchant(MerchantResponse.builder()
